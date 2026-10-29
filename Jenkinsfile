@@ -15,37 +15,19 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm ci'
+                bat 'npm ci'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'npm test'
+                bat 'npm test'
             }
         }
 
-        stage('Deploy') {
+        stage('Package') {
             steps {
-                sh '''
-                    cat > ecosystem.config.js <<EOF
-module.exports = {
-    apps: [{
-        name: "express-frontend",
-        script: "app.js",
-        cwd: "${WORKSPACE}",
-        env: {
-            PORT: 3000,
-            NODE_ENV: "production"
-        }
-    }]
-};
-EOF
-
-                    pm2 startOrReload ecosystem.config.js --update-env
-                    sleep 2
-                    curl --fail http://127.0.0.1:3000/health
-                '''
+                echo 'Express tests passed. Application is ready for deployment.'
             }
         }
     }
